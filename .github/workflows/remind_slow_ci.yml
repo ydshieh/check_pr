@@ -22,7 +22,7 @@ jobs:
       uses: peter-evans/find-comment@v2
       id: find_comment
       with:
-        issue-number: ${{ steps.github-context.outputs.pr_number }}
+        issue-number: ${{ github.event.number }}
         body-includes: Slow CI
 
     - name: Add remind comment if not present
