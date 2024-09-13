@@ -26,6 +26,7 @@ jobs:
         body-includes: Slow CI
 
     - name: Add remind comment if not present
+      id: fc
       uses: thollander/actions-comment-pull-request@v2
       if: steps.find_comment.outputs.comment-id == ''
 
@@ -33,6 +34,9 @@ jobs:
         message: 'This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.'
         pr_number: ${{ github.event.number }}
         GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
+
+    - run: |
+        echo ${{ steps.fc.outputs.comment-id }}
 
     - name: Write a comment that will be deleted at the end of the job
       uses: thollander/actions-comment-pull-request@v2
