@@ -26,7 +26,6 @@ jobs:
         body-includes: Slow CI
 
     - name: Add remind comment if not present
-      id: fc
       uses: thollander/actions-comment-pull-request@v2
       if: steps.find_comment.outputs.comment-id == ''
 
@@ -35,15 +34,22 @@ jobs:
         pr_number: ${{ github.event.number }}
         GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
 
-    - run: |
-        echo ${{ steps.fc.outputs.comment-id }}
-
-    - name: Write a comment that will be deleted at the end of the job
-      uses: thollander/actions-comment-pull-request@v2
+    - name: Find remind comment
+      uses: peter-evans/find-comment@v2
+      id: find_comment
       with:
-        message: |
-          This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.
-        comment_tag: to_delete
-        mode: delete
-        pr_number: ${{ github.event.number }}
-        GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
+        issue-number: ${{ github.event.number }}
+        body-includes: Slow CI
+
+    - run: |
+        echo ${{ steps.find_comment.outputs.comment-id }}
+
+#    - name: Write a comment that will be deleted at the end of the job
+#      uses: thollander/actions-comment-pull-request@v2
+#      with:
+#        message: |
+#          This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.
+#        comment_tag: to_delete
+#        mode: delete
+#        pr_number: ${{ github.event.number }}
+#        GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
