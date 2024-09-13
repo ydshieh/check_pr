@@ -18,34 +18,18 @@ jobs:
       run: |
         echo "Bonjour"
 
-    - name: Find remind comment
+    - name: Find comment
       uses: peter-evans/find-comment@v2
       id: find_comment
       with:
         issue-number: ${{ github.event.number }}
         body-includes: Slow CI
 
-    - name: Add remind comment if not present
-      uses: thollander/actions-comment-pull-request@v2
-      if: steps.find_comment.outputs.comment-id == ''
-
-      with:
-        message: 'This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.'
-        pr_number: ${{ github.event.number }}
-        GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
-
-    - name: Find remind comment
-      uses: peter-evans/find-comment@v2
-      id: find_comment_2
-      with:
-        issue-number: ${{ github.event.number }}
-        body-includes: Slow CI
-
     - run: |
-        echo ${{ steps.find_comment_2.outputs.comment-id }}
+        echo ${{ steps.find_comment.outputs.comment-id }}
 
-
-    - name: delete comments
+    - name: delete previous comment (if found)
+      if: steps.find_comment.outputs.comment-id != ''
       uses: actions/github-script@v6
       with:
         result-encoding: string
@@ -54,18 +38,13 @@ jobs:
           github.rest.issues.deleteComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            comment_id: ${{ steps.find_comment_2.outputs.comment-id }},
+            comment_id: ${{ steps.find_comment.outputs.comment-id }},
           })
 
-
-
-
-#    - name: Write a comment that will be deleted at the end of the job
-#      uses: thollander/actions-comment-pull-request@v2
-#      with:
-#        message: |
-#          This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.
-#        comment_tag: to_delete
-#        mode: delete
-#        pr_number: ${{ github.event.number }}
-#        GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
+    - name: Add remind comment
+      uses: thollander/actions-comment-pull-request@v2
+      # if: steps.find_comment.outputs.comment-id == ''
+      with:
+        message: 'This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.'
+        pr_number: ${{ github.event.number }}
+        GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
