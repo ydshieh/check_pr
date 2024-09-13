@@ -31,5 +31,5 @@ jobs:
 
       with:
         message: 'This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.'
-        pr_number: ${{ steps.github-context.outputs.pr_number }}
-        GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
+        pr_number: ${{ github.event.number }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
