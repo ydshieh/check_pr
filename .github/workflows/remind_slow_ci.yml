@@ -37,8 +37,7 @@ jobs:
     - name: Write a comment that will be deleted at the end of the job
       uses: thollander/actions-comment-pull-request@v2
       with:
-        message: |
-          The PR is being built...
+        message: 'This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.'
         comment_tag: to_delete
         mode: delete
         pr_number: ${{ github.event.number }}
