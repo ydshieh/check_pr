@@ -44,6 +44,21 @@ jobs:
     - run: |
         echo ${{ steps.find_comment_2.outputs.comment-id }}
 
+
+    - name: delete comments
+      uses: actions/github-script@v6
+      with:
+        result-encoding: string
+        script: |
+          github.rest.issues.deleteComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            comment_id: ${{ steps.find_comment_2.outputs.comment-id }},
+          })
+
+
+
+
 #    - name: Write a comment that will be deleted at the end of the job
 #      uses: thollander/actions-comment-pull-request@v2
 #      with:
