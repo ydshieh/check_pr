@@ -1,4 +1,4 @@
-name: Build PR Documentation
+name: Remind running Slow CI
 
 on:
   pull_request_target:
@@ -17,3 +17,19 @@ jobs:
     - name: Install requirements
       run: |
         echo "Bonjour"
+
+    - name: Find remind comment
+      uses: peter-evans/find-comment@v2
+      id: find_comment
+      with:
+        issue-number: ${{ steps.github-context.outputs.pr_number }}
+        body-includes: Slow CI
+
+    - name: Add remind comment if not present
+      uses: thollander/actions-comment-pull-request@v2
+      if: steps.find_comment.outputs.comment-id == ''
+
+      with:
+        message: 'This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.'
+        pr_number: ${{ steps.github-context.outputs.pr_number }}
+        GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
