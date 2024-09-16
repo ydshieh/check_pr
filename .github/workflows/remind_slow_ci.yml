@@ -43,4 +43,4 @@ jobs:
       with:
         message: 'Please trigger Slow CI and make sure all tests are passing before merging this pull request.'
         pr_number: ${{ github.event.number }}
-        GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
