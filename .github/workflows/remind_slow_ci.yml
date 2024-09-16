@@ -1,5 +1,6 @@
-name: Remind running Slow CI
+name: Reminder of running Slow CI
 
+# For security reason, don't use `pull_request` but `pull_request_target`!
 on:
   pull_request_target:
 
@@ -14,21 +15,17 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - name: Install requirements
-      run: |
-        echo "Bonjour"
-
     - name: Find comment
       uses: peter-evans/find-comment@v2
       id: find_comment
       with:
         issue-number: ${{ github.event.number }}
-        body-includes: Slow CI
+        body-includes: Please trigger Slow CI and make sure all tests are passing before merging this pull request.
 
     - run: |
         echo ${{ steps.find_comment.outputs.comment-id }}
 
-    - name: delete previous comment (if found)
+    - name: Delete previous comment (if found)
       if: steps.find_comment.outputs.comment-id != ''
       uses: actions/github-script@v6
       with:
@@ -41,10 +38,9 @@ jobs:
             comment_id: ${{ steps.find_comment.outputs.comment-id }},
           })
 
-    - name: Add remind comment
+    - name: Add comment
       uses: thollander/actions-comment-pull-request@v2
-      # if: steps.find_comment.outputs.comment-id == ''
       with:
-        message: 'This PR has no Slow CI triggered yet. Please trigger it and make sure all tests passing before merge.'
+        message: 'Please trigger Slow CI and make sure all tests are passing before merging this pull request.'
         pr_number: ${{ github.event.number }}
         GITHUB_TOKEN: ${{ secrets.comment_bot_token }}
